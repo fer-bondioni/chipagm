@@ -477,7 +477,7 @@ function create() {
   ding = this.sound.add("ding", {
     loop: true
   });
-  timedEvent = this.time.delayedCall(1000000, onEvent, [], this);
+  timedEvent = this.time.delayedCall(30000, onEvent, [], this);
   timeText = this.add.text(650, 0, "Time", {
     fontSize: "28px",
     fontFamily: "Arial",
@@ -617,7 +617,7 @@ function create() {
   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
   cursors = this.input.keyboard.createCursorKeys(); // Help text that has a "fixed" position on the screen
 
-  this.add.text(0, 0, "Arrow keys to move and eat\nTime flies!\nThe Monsters are due on Chipa Street", {
+  this.add.text(0, 0, "Arrow keys to move and eat\nEat as much as you can!\nThe Monsters are due on Chipa Street", {
     font: "18px Arial",
     fill: "#000000",
     padding: {
