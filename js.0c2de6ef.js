@@ -918,7 +918,7 @@ function onEvent() {
     scoreText.setPadding(40, 10, 100, 10);
   }
 
-  if (score < 100 && score > 0) {
+  if (score < 900 && score > 0) {
     lose.play();
     player.setTint(0xff0000);
     scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
