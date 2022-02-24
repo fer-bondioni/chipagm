@@ -441,9 +441,14 @@ const config = {
 const game = new Phaser.Game(config);
 let cursors;
 let player;
+let stars;
+let speed = 800;
+let gift = 0;
+let giftText;
 let chipas;
 let chipasos;
 let score = 0;
+let id = gift;
 let scoreText;
 let gameOver = false;
 var timedEvent;
@@ -453,15 +458,28 @@ let timeText; //let showDebug = false;
 function preload() {
   let url = "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js";
   this.load.plugin("rexvirtualjoystickplugin", url, true);
+  this.load.plugin("rexglowfilterpipelineplugin", "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js", true);
   this.load.image("tiles", "../assets/tilesets/tuxmon-sample-32px-extruded.png");
   this.load.image("button", "../assets/images/button.png");
+  this.load.spritesheet("star", "../assets/images/star.png", {
+    frameWidth: 16,
+    frameHeight: 16
+  });
   this.load.image("chipa", "../assets/chipa2.png");
   this.load.image("bomb", "assets/images/bomb.png");
+  this.load.image("gift-box", "../assets/images/gift-box.png");
+  this.load.image("gift-card", "../assets/images/gift-icon.png");
+  this.load.image("camera", "../assets/images/camera.png");
+  this.load.image("photo", "../assets/images/photo.png");
   this.load.tilemapTiledJSON("map", "../assets/tilemaps/hay-chipa.json");
   this.load.audio("ding", "../assets/audio/ding.ogg");
   this.load.audio("eat", "../assets/audio/eat.mp3");
-  this.load.audio("lose", "../assets/audio/lose.wav");
-  this.load.audio("win", "../assets/audio/win.wav"); // An atlas is a way to pack multiple images together into one texture. I'm using it to load all
+  this.load.audio("lose", "../assets/audio/lose.mp3");
+  this.load.audio("win", "../assets/audio/win.wav");
+  this.load.audio("monster", "../assets/audio/monster.wav");
+  this.load.audio("shiny", "../assets/audio/star.wav");
+  this.load.audio("mario", "../assets/audio/mario.ogg");
+  this.load.audio("shot", "../assets/audio/shot.wav"); // An atlas is a way to pack multiple images together into one texture. I'm using it to load all
   // the player animations (walking left, walking right, etc.) in one image. For more info see:
   //  https://labs.phaser.io/view.html?src=src/animation/texture%20atlas%20animation.js
   // If you don't use an atlas, you can do the same thing with a spritesheet, see:
@@ -471,11 +489,79 @@ function preload() {
 }
 
 function create() {
+  graphics = this.add.graphics();
+  postFxPlugin = this.plugins.get("rexglowfilterpipelineplugin");
+  var canvas;
+  snap = this.add.image(730, 430, "camera").setScale(0.3).setScrollFactor(0).setDepth(30).setInteractive({
+    useHandCursor: true
+  });
+
+  function exportCanvasAsPNG(id, fileName, dataUrl) {
+    var canvasElement = document.getElementById(id);
+    var MIME_TYPE = "image/png";
+    var imgURL = dataUrl;
+    var dlLink = document.createElement("a");
+    dlLink.download = fileName;
+    dlLink.href = imgURL;
+    dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(":");
+    document.body.appendChild(dlLink);
+    document.body.removeChild(dlLink);
+
+    if (gift === 3) {
+      dlLink.click();
+      shot.play();
+    }
+
+    snap.on("pointerdown", () => {
+      dlLink.click();
+      shot.play();
+    });
+  }
+
+  snap.on("pointerover", () => {
+    photo = this.add.image(700, 350, "photo").setScale(0.5).setScrollFactor(0).setDepth(30);
+    setTimeout(() => {
+      photo.destroy();
+    }, 2500);
+  });
+  game.renderer.snapshotArea(690, 450, 80, 50, function (image) {
+    exportCanvasAsPNG(gift, "mona-score", image.src);
+  });
   const map = this.make.tilemap({
     key: "map"
   });
   ding = this.sound.add("ding", {
-    loop: true
+    loop: true,
+    volume: 0.6
+  });
+  monster = this.sound.add("monster", {
+    loop: true,
+    volume: 0.1
+  });
+  shiny = this.sound.add("shiny", {
+    loop: false,
+    volume: 0.8
+  });
+  mario = this.sound.add("mario", {
+    loop: true,
+    volume: 0.3
+  });
+  shot = this.sound.add("shot", {
+    loop: false,
+    volume: 0.4
+  });
+  ding.play();
+  eat = this.sound.add("eat", {
+    loop: false,
+    volume: 0.5
+  });
+  lose = this.sound.add("lose", {
+    loop: false,
+    volume: 0.3
+  });
+  win = this.sound.add("win", {
+    loop: false,
+    volume: 0.8
   });
   timedEvent = this.time.delayedCall(30000, onEvent, [], this);
   timeText = this.add.text(650, 0, "Time", {
@@ -487,7 +573,7 @@ function create() {
       x: 10,
       y: 5
     }
-  }).setScrollFactor(0).setDepth(40);
+  }).setScrollFactor(0).setDepth(30);
   this.joyStick = this.plugins.get("rexvirtualjoystickplugin").add(this, {
     x: 55,
     y: 200,
@@ -504,19 +590,7 @@ function create() {
     repeat: 1
   });
   var visible = this.joyStick.visible;
-  var enable = this.joyStick.enable;
-  ding.play();
-  eat = this.sound.add("eat", {
-    loop: false
-  });
-  lose = this.sound.add("lose", {
-    loop: false,
-    volume: 0.1
-  });
-  win = this.sound.add("win", {
-    loop: false,
-    volume: 0.1
-  }); // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
+  var enable = this.joyStick.enable; // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
   // Phaser's cache (i.e. the name you used in preload)
 
   const tileset = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles"); // Parameters: layer name (or index) from Tiled, tileset, x, y
@@ -537,7 +611,34 @@ function create() {
   const cartel = map.findObject("Objects", obj => obj.name === "Cartel"); // Create a sprite with physics enabled via the physics system. The image used for the sprite has
   // a bit of whitespace, so I'm using setSize & setOffset to control the size of the player's body.
 
-  player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "atlas", "misa-front").setSize(30, 40).setOffset(0, 24);
+  player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "atlas", "misa-front").setSize(30, 40).setOffset(0, 24); // stars = this.physics.add
+  //   .sprite(100, 200, "stars", 1)
+  //   .setSize(30, 30)
+  //   .setOffset(0, 24)
+  //   .setScrollFactor(0)
+  //   .setDepth(30);
+
+  const anims = this.anims; //stars movement
+
+  anims.create({
+    key: "star_spin",
+    frames: anims.generateFrameNames("star", {
+      frames: [1, 5, 9, 13, 17, 21]
+    }),
+    frameRate: 10,
+    repeat: -1
+  }); // var fakeStar = this.add.sprite(155, 12, "star", 1);
+  // fakeStar.setScrollFactor(0, 0).setDepth(20);
+
+  this.starGroup = this.physics.add.group().setDepth(30); //make 2 arrays with x and y  of stars and then loop through + create stars
+
+  var starCoord = [[200, 340]];
+
+  for (let i = 0; i < starCoord.length; i++) {
+    var stars = this.starGroup.create(starCoord[i][0], starCoord[i][1], "star").setScale(2);
+    stars.anims.play("star_spin");
+  }
+
   chipas = this.physics.add.group({
     key: "chipa",
     repeat: 5,
@@ -558,16 +659,19 @@ function create() {
     },
     fill: "#000000",
     backgroundColor: "#ffffff"
-  }).setScrollFactor(0).setDepth(50); // Watch the player and worldLayer for collisions, for the duration of the scene:
+  }).setScrollFactor(0).setDepth(40); // Watch the player and worldLayer for collisions, for the duration of the scene:
 
   this.physics.add.collider(player, worldLayer);
   this.physics.add.collider(chipas, worldLayer);
+  this.physics.add.collider(stars, worldLayer);
   this.physics.add.collider(bombs, worldLayer);
   this.physics.add.collider(player, bombs, onEvent, null, this);
-  this.physics.add.overlap(player, chipas, hitChipa, null, this); // Create the player's walking animations from the texture atlas. These are stored in the global
+  this.physics.add.overlap(player, chipas, hitChipa, null, this);
+  this.physics.add.overlap(player, bombs, hitBomb, null, this);
+  this.physics.add.overlap(player, stars, hitStar, null, this); // Create the player's walking animations from the texture atlas. These are stored in the global
   // animation manager so any sprite can access them.
+  //misa movement
 
-  const anims = this.anims;
   anims.create({
     key: "misa-left-walk",
     frames: anims.generateFrameNames("atlas", {
@@ -615,20 +719,41 @@ function create() {
   const camera = this.cameras.main;
   camera.startFollow(player);
   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-  cursors = this.input.keyboard.createCursorKeys(); // Help text that has a "fixed" position on the screen
+  cursors = this.input.keyboard.createCursorKeys(); //gift box
 
-  this.add.text(0, 0, "Arrow keys to move and eat\nEat as much as you can!\nThe Monsters are due on Chipa Street", {
+  graphics.fillStyle(0x00a300, 0.8);
+  graphics.fillRoundedRect(695, 463, 30, 30, 12).setDepth(30).setScrollFactor(0);
+  giftText = this.add.text(705, 468, gift, {
     font: "18px Arial",
-    fill: "#000000",
+    fill: "white",
+    backgroundColor: "transparent"
+  }).setScrollFactor(0).setDepth(40); // this.add
+  //   .image(752, 476, "gift-box")
+  //   .setScrollFactor(0)
+  //   .setDepth(30)
+  //   .setScale(0.07);
+  // this.add
+  //   .image(752, 476, "gift-box")
+  //   .setScrollFactor(0)
+  //   .setDepth(30)
+  //   .setScale(0.09);
+  //box version
+
+  this.add.image(747, 476, "gift-box").setScrollFactor(0).setDepth(30).setScale(0.029); //gift-card
+  //Help text that has a "fixed" position on the screen
+
+  this.add.text(0, 0, "Arrow keys to move and eat\n900 or more = 1 Chipa Card\n3 Chipa Cards = Real chipas\nThe Monsters are due on Chipa Street", {
+    font: "18px Arial",
+    fill: "white",
     padding: {
-      left: 5,
+      left: 6,
       right: 10,
       top: 10,
       bottom: 10
     },
     align: "left",
-    backgroundColor: "#ffffff"
-  }).setScrollFactor(0).setDepth(30);
+    backgroundColor: "rgba(0,0,0,0.5)"
+  }).setScrollFactor(0).setDepth(40);
   this.add.text(100, 550, "Run mona!", {
     font: "18px courier",
     fill: "#000000",
@@ -644,8 +769,14 @@ function create() {
   setTimeout(() => {
     image2.on("pointerdown", () => {
       score = 0;
+      speed = 800;
       ding.stop();
       this.scene.restart();
+      player.setVelocity(800);
+      monster.stop();
+      mario.stop();
+      win.stop();
+      lose.stop();
     });
   }, 1000);
 }
@@ -655,8 +786,20 @@ function update(time, delta) {
   //   return;
   // }
 
-  const speed = 800;
-  const prevVelocity = player.body.velocity.clone(); // Stop any previous movement from the last frame
+  const prevVelocity = player.body.velocity.clone();
+
+  if (score > 300 && score < 500) {
+    bombs.setVelocity(0, 0);
+    monster.stop();
+  }
+
+  if (score > 600) {
+    speed = 800;
+    mario.stop();
+    postFxPlugin.remove(player);
+    player.glowTask.stop();
+  } // Stop any previous movement from the last frame
+
 
   player.body.setVelocity(0); // Horizontal movement
 
@@ -691,62 +834,106 @@ function update(time, delta) {
   }
 }
 
-function hitChipa(player, chipa, bomb) {
+function hitStar(player, star) {
+  star.disableBody(true, true);
+  var pipeline = postFxPlugin.add(player);
+  player.glowTask = player.scene.tweens.add({
+    targets: pipeline,
+    intensity: 0.02,
+    ease: "Linear",
+    duration: Phaser.Math.Between(500, 1000),
+    repeat: -1,
+    yoyo: true
+  });
+  shiny.play();
+  mario.play();
+  ding.stop();
+  speed = 1200;
+}
+
+function hitChipa(player, chipa) {
   chipa.disableBody(true, true);
   eat.play();
+
+  if (score === 10 || score === 20 || score === 30 || score === 200 || score === 350 || score === 500 || score === 750 || score === 800 || score === 900) {
+    player.scale *= 1.1;
+  }
+
   score += 10;
   scoreText.setText("Score: " + score);
 
   if (score > 90 && score < 250) {
     scoreText.setBackgroundColor("rgba(255, 0, 0, 0.9)");
-    scoreText.setText("Please, help\nsomeone is eating my chipas!");
+    scoreText.setText("Please, help\nsomeone is eating my chipas!"); //scoreText.setPadding(40, 10, 70, 10);
+
+    scoreText.setAlign("center");
   }
 
-  var x = player.x < 200 ? Phaser.Math.Between(200, 500) : Phaser.Math.Between(0, 200);
-  var y = player.y < 200 ? Phaser.Math.Between(100, 420) : Phaser.Math.Between(560, 700);
+  const createBombs = () => {
+    var x = player.x < 200 ? Phaser.Math.Between(200, 500) : Phaser.Math.Between(0, 200);
+    var y = player.y < 200 ? Phaser.Math.Between(100, 420) : Phaser.Math.Between(560, 700);
 
-  if (score === 100 || score === 200 || score === 300 || score === 500 || score === 700 || score === 900) {
-    var bomb = bombs.create(x, y, "bomb");
-    console.log(bombs);
-    bomb.setBounce(1);
-    bomb.setDepth(30);
-    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    bomb.setCollideWorldBounds(true);
-    bomb.allowGravity = false; //bomb.setScale(2);
-  }
+    if (score === 100 || score === 200 || score === 300 || score === 500 || score === 700 || score === 900) {
+      let bomb = bombs.create(x, y, "bomb");
+      bomb.setBounce(1);
+      bomb.setDepth(30);
+      bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+      bomb.setCollideWorldBounds(true);
+      bomb.allowGravity = false; //console.log(bomb);
+      //bomb.setScale(2);
 
+      monster.play();
+    }
+  };
+
+  createBombs();
   var z = Phaser.Math.Between(100, 450);
   let j = [Phaser.Math.Between(100, 420), Phaser.Math.Between(560, 700)];
   var f = j.sort(function (a, b) {
     return 0.5 - Math.random();
   }).pop();
-  console.log(f);
 
   if (chipas.countActive(true) === 0) {
     chipas.children.iterate(function (child) {
       child.enableBody(true, z, f, true, true);
     });
   }
-}
+} //hitBomb
+
+
+function hitBomb() {}
 
 function onEvent() {
   timedEvent.paused = true;
   gameOver = true;
   ding.stop();
-  player.setTint(0xff0000);
   player.anims.stop();
   player.body.setVelocity(0);
   this.physics.pause();
 
-  if (score < 850) {
+  if (score === 0) {
     lose.play();
-    scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
-  } else {
-    win.play();
-    scoreText.setText(`${score} chipas destroyed\nWe are fucking dead`);
+    player.setTint(0xff0000);
+    scoreText.setText(`Meh...`);
+    scoreText.setPadding(40, 10, 100, 10);
   }
 
-  const restart = this.add.text(256, 180, "Press button to restart 🐵", {
+  if (score < 100 && score > 0) {
+    lose.play();
+    player.setTint(0xff0000);
+    scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
+    scoreText.setPadding(40, 10, 100, 10);
+  } else {
+    win.play();
+    scoreText.setText(`${score} chipas destroyed\nPoor little monsters\nCongratulations, Mona (terrible!)`);
+    scoreText.setBackgroundColor("#FFAB32");
+    scoreText.setPadding(70, 10, 100, 10);
+    this.add.image(709, 312, "gift-card").setScrollFactor(0).setDepth(30).setScale(0.2);
+    gift += 1;
+    giftText.setText(gift);
+  }
+
+  const restart = this.add.text(252, 145, "Press button to restart 🐵", {
     font: "26px Arial",
     padding: {
       x: 20,
@@ -760,14 +947,19 @@ function onEvent() {
   }).setScrollFactor(0).setDepth(30).setScale(0.2);
   image.on("pointerover", () => image.setScale(0.3));
   scoreText.setFontSize(scoreText.fontSize = "22px");
-  scoreText.setPadding(40, 10, 100, 10);
   scoreText.setAlign("center");
-  scoreText.setFill("black");
-  scoreText.setBackgroundColor("rgba(255, 0, 0, 0.9)");
+  scoreText.setFill("black"); //scoreText.setBackgroundColor("rgba(255, 0, 0, 0.9)");
+
   score = 0;
+  speed = 800;
+  monster.stop();
+  mario.stop();
   setTimeout(() => {
     image.on("pointerdown", () => {
       this.scene.restart();
+      win.stop();
+      lose.stop();
+      mario.stop();
     });
   }, 1000);
 }
