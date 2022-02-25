@@ -573,24 +573,27 @@ function create() {
       x: 10,
       y: 5
     }
-  }).setScrollFactor(0).setDepth(30);
-  this.joyStick = this.plugins.get("rexvirtualjoystickplugin").add(this, {
-    x: 55,
-    y: 200,
-    radius: 100,
-    base: this.add.circle(0, 0, 50, 0x888888),
-    thumb: this.add.circle(0, 0, 25, 0xcccccc),
-    dir: "8dir",
-    forceMin: 16,
-    fixed: true,
-    enable: true
-  }).setScrollFactor(0);
-  this.joystickCursors = this.joyStick.createCursorKeys();
+  }).setScrollFactor(0).setDepth(30); // this.joyStick = this.plugins
+  //   .get("rexvirtualjoystickplugin")
+  //   .add(this, {
+  //     x: 55,
+  //     y: 200,
+  //     radius: 100,
+  //     base: this.add.circle(0, 0, 50, 0x888888),
+  //     thumb: this.add.circle(0, 0, 25, 0xcccccc),
+  //     dir: "8dir",
+  //     forceMin: 16,
+  //     fixed: true,
+  //     enable: true,
+  //   })
+  //   .setScrollFactor(0);
+  // this.joystickCursors = this.joyStick.createCursorKeys();
+  // var visible = this.joyStick.visible;
+  // var enable = this.joyStick.enable;
+
   bombs = this.physics.add.group({
     repeat: 1
-  });
-  var visible = this.joyStick.visible;
-  var enable = this.joyStick.enable; // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
+  }); // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
   // Phaser's cache (i.e. the name you used in preload)
 
   const tileset = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles"); // Parameters: layer name (or index) from Tiled, tileset, x, y
@@ -798,34 +801,74 @@ function update(time, delta) {
     mario.stop();
     postFxPlugin.remove(player);
     player.glowTask.stop();
+  }
+
+  let moveleft = false;
+  let moveright = false;
+  let moveup = false;
+  let movedown = false;
+  let pointer = this.input.activePointer;
+
+  if (pointer.primaryDown) {
+    let pointerPosition = this.cameras.main.getWorldPoint(pointer.x, pointer.y); // Horizontal movement
+
+    if (Math.abs(pointerPosition.x - player.x) > 15) {
+      // To avoid glitching when the player hits the cursor
+      if (pointerPosition.x > player.x) {
+        moveright = true;
+      } else if (pointerPosition.x < player.x) {
+        moveleft = true;
+      }
+    } // Vertical movement
+
+
+    if (Math.abs(pointerPosition.y - player.y) > 15) {
+      // To avoid glitching when the player hits the cursor
+      if (pointerPosition.y > player.y) {
+        movedown = true;
+      } else if (pointerPosition.y < player.y) {
+        moveup = true;
+      }
+    }
   } // Stop any previous movement from the last frame
 
 
   player.body.setVelocity(0); // Horizontal movement
 
-  if (cursors.left.isDown || this.joystickCursors.left.isDown) {
+  if (cursors.left.isDown || // this.joystickCursors.left.isDown
+  moveleft) {
     player.body.setVelocityX(-speed);
-  } else if (cursors.right.isDown || this.joystickCursors.right.isDown) {
-    player.body.setVelocityX(speed);
-  } // Vertical movement
+  } else if (cursors.right.isDown || // this.joystickCursors.right.isDown
+  moveright // pointer.primaryDown
+  ) {
+      player.body.setVelocityX(speed);
+    } // Vertical movement
 
 
-  if (cursors.up.isDown || this.joystickCursors.up.isDown) {
-    player.body.setVelocityY(-speed);
-  } else if (cursors.down.isDown || this.joystickCursors.down.isDown) {
-    player.body.setVelocityY(speed);
-  } // Normalize and scale the velocity so that player can't move faster along a diagonal
+  if (cursors.up.isDown || // this.joystickCursors.up.isDown
+  moveup // pointer.primaryDown
+  ) {
+      player.body.setVelocityY(-speed);
+    } else if (cursors.down.isDown || // this.joystickCursors.down.isDown
+  movedown // pointer.primaryDown
+  ) {
+      player.body.setVelocityY(speed);
+    } // Normalize and scale the velocity so that player can't move faster along a diagonal
 
 
   player.body.velocity.normalize().scale(speed); // Update the animation last and give left/right animations precedence over up/down animations
 
-  if (cursors.left.isDown || this.joystickCursors.left.isDown) {
+  if (cursors.left.isDown || // this.joystickCursors.left.isDown ||
+  pointer.primaryDown) {
     player.anims.play("misa-left-walk", true);
-  } else if (cursors.right.isDown || this.joystickCursors.right.isDown) {
+  } else if (cursors.right.isDown || // this.joystickCursors.right.isDown ||
+  pointer.primaryDown) {
     player.anims.play("misa-right-walk", true);
-  } else if (cursors.up.isDown || this.joystickCursors.up.isDown) {
+  } else if (cursors.up.isDown || // this.joystickCursors.up.isDown ||
+  pointer.up.isDown) {
     player.anims.play("misa-back-walk", true);
-  } else if (cursors.down.isDown || this.joystickCursors.down.isDown) {
+  } else if (cursors.down.isDown || // this.joystickCursors.down.isDown ||
+  pointer.primaryDown) {
     player.anims.play("misa-front-walk", true);
   } else {
     player.anims.stop(); // If we were moving, pick and idle frame to use
@@ -949,6 +992,13 @@ function onEvent() {
   scoreText.setFontSize(scoreText.fontSize = "22px");
   scoreText.setAlign("center");
   scoreText.setFill("black"); //scoreText.setBackgroundColor("rgba(255, 0, 0, 0.9)");
+  // function saveScore() {
+  //   firebaseConfig.db.collection("scores").add({
+  //     score: score,
+  //   });
+  //   console.log("score saved");
+  // }
+  // saveScore();
 
   score = 0;
   speed = 800;
