@@ -425,7 +425,7 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.SHOW_ALL,
+    mode: Phaser.Scale.ScaleModes.RESIZE,
     autoCenter: Phaser.Scale.Center.CENTER_BOTH,
     width: 800,
     height: 600,
