@@ -438,7 +438,7 @@ const config = {
       width: 1600,
       height: 1200
     },
-    zoom: 1,
+    zoom: 0.5,
     autoRound: false
   }
 };
