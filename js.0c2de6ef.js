@@ -411,6 +411,9 @@ function hmrAcceptRun(bundle, id) {
 const config = {
   type: Phaser.AUTO,
   pixelArt: false,
+  width: 800,
+  height: 600,
+  parent: "game-container",
   physics: {
     default: "arcade",
     arcade: {
@@ -432,10 +435,7 @@ const config = {
   },
   scale: {
     mode: Phaser.Scale.ScaleModes.FIT,
-    autoCenter: Phaser.Scale.Center.CENTER_BOTH,
-    width: 800,
-    height: 600,
-    parent: "game-container"
+    autoCenter: Phaser.Scale.Center.CENTER_BOTH
   }
 };
 const game = new Phaser.Game(config);
@@ -492,6 +492,14 @@ function create() {
   graphics = this.add.graphics();
   postFxPlugin = this.plugins.get("rexglowfilterpipelineplugin");
   var canvas;
+  var orientation = this.scale.orientation;
+  this.scale.on("orientationchange", function (orientation) {
+    if (orientation === Phaser.Scale.PORTRAIT) {
+      width: 360;
+    } else if (orientation === Phaser.Scale.LANDSCAPE) {
+      height: 300;
+    }
+  });
   snap = this.add.image(730, 430, "camera").setScale(0.3).setScrollFactor(0).setDepth(30).setInteractive({
     useHandCursor: true
   });
@@ -961,7 +969,7 @@ function onEvent() {
     scoreText.setPadding(40, 10, 100, 10);
   }
 
-  if (score < 900 && score > 0) {
+  if (score < 900 && score !== 0) {
     lose.play();
     player.setTint(0xff0000);
     scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
