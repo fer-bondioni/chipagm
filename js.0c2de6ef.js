@@ -408,13 +408,11 @@ function hmrAcceptRun(bundle, id) {
   acceptedAssets[id] = true;
 }
 },{}],"e1dc355820af71709720f63f441ab41c":[function(require,module,exports) {
-// fix the height to 720
-const DEFAULT_HEIGHT = 600; // adjust the width dynamically based on the device screen ratio
-
-const DEFAULT_WIDTH = window.innerWidth / window.innerHeight * DEFAULT_HEIGHT;
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
+  width: window.innerWidth,
+  height: window.innerHeight,
   parent: "game-container",
   physics: {
     default: "arcade",
@@ -436,10 +434,8 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: DEFAULT_WIDTH,
-    height: DEFAULT_HEIGHT
+    mode: Phaser.Scale.ScaleModes.FIT,
+    autoCenter: Phaser.Scale.Center.CENTER_BOTH
   }
 };
 const game = new Phaser.Game(config);
@@ -505,7 +501,8 @@ function create() {
     var dlLink = document.createElement("a");
     dlLink.download = fileName;
     dlLink.href = imgURL;
-    dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(":");
+    dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join();
+    ":";
     document.body.appendChild(dlLink);
     document.body.removeChild(dlLink);
 
@@ -1015,6 +1012,18 @@ function onEvent() {
     });
   }, 1000);
 }
+
+window.onresize = function () {
+  if (window.innerWidth > window.innerHeight) {
+    window.innerWidth = 1200;
+    window.innerHeight = 800;
+  } else {
+    window.innerWidth = 800;
+    window.innerHeight = 600;
+  }
+
+  console.log(window.innerWidth);
+};
 },{}]},{},["b8dcfe8630a76380e8047954456aec0a","e1dc355820af71709720f63f441ab41c"], null)
 
 //# sourceMappingURL=js.0c2de6ef.js.map
