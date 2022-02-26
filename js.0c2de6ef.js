@@ -410,7 +410,7 @@ function hmrAcceptRun(bundle, id) {
 },{}],"e1dc355820af71709720f63f441ab41c":[function(require,module,exports) {
 const config = {
   type: Phaser.AUTO,
-  pixelArt: false,
+  pixelArt: true,
   width: 800,
   height: 600,
   parent: "game-container",
@@ -492,6 +492,8 @@ function create() {
   graphics = this.add.graphics();
   postFxPlugin = this.plugins.get("rexglowfilterpipelineplugin");
   var canvas;
+  checkOriention(this.scale.orientation);
+  this.scale.on("orientationchange", checkOriention, this);
   snap = this.add.image(730, 430, "camera").setScale(0.3).setScrollFactor(0).setDepth(30).setInteractive({
     useHandCursor: true
   });
@@ -966,7 +968,7 @@ function onEvent() {
     player.setTint(0xff0000);
     scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
     scoreText.setPadding(40, 10, 100, 10);
-  } else {
+  } else if (score > 900) {
     win.play();
     scoreText.setText(`${score} chipas destroyed\nPoor little monsters\nCongratulations, Mona (terrible!)`);
     scoreText.setBackgroundColor("#FFAB32");
@@ -1012,6 +1014,18 @@ function onEvent() {
       mario.stop();
     });
   }, 1000);
+}
+
+function checkOriention(orientation) {
+  if (orientation === Phaser.Scale.PORTRAIT) {
+    width = window.innerWidth;
+    height = window.innerHeight;
+  } else if (orientation === Phaser.Scale.LANDSCAPE) {
+    width = window.innerWidth;
+    height = window.innerHeight;
+  }
+
+  console.log(width, height);
 }
 },{}]},{},["b8dcfe8630a76380e8047954456aec0a","e1dc355820af71709720f63f441ab41c"], null)
 
