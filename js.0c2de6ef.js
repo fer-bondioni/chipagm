@@ -434,7 +434,8 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.FIT
+    mode: Phaser.Scale.ScaleModes.FIT,
+    autoCenter: Phaser.Scale.Center.CENTER_BOTH
   }
 };
 const game = new Phaser.Game(config);
