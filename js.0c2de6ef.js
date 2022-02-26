@@ -410,9 +410,6 @@ function hmrAcceptRun(bundle, id) {
 },{}],"e1dc355820af71709720f63f441ab41c":[function(require,module,exports) {
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  parent: "game-container",
   pixelArt: true,
   physics: {
     default: "arcade",
@@ -434,8 +431,11 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.FIT,
-    autoCenter: Phaser.Scale.Center.CENTER_BOTH
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800,
+    height: 600,
+    parent: "game-container"
   }
 };
 const game = new Phaser.Game(config);
