@@ -425,7 +425,7 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.FIT,
+    mode: Phaser.Scale.ScaleModes.SHOW_ALL,
     autoCenter: Phaser.Scale.Center.CENTER_BOTH,
     width: 800,
     height: 600,
@@ -485,8 +485,6 @@ function preload() {
 function create() {
   graphics = this.add.graphics();
   postFxPlugin = this.plugins.get("rexglowfilterpipelineplugin");
-  window.addEventListener("resize", resize);
-  resize();
   var canvas;
   snap = this.add.image(730, 430, "camera").setScale(0.3).setScrollFactor(0).setDepth(30).setInteractive({
     useHandCursor: true
@@ -1008,22 +1006,6 @@ function onEvent() {
       mario.stop();
     });
   }, 1000);
-}
-
-function resize() {
-  var canvas = game.canvas,
-      width = window.innerWidth,
-      height = window.innerHeight;
-  var wratio = width / height,
-      ratio = canvas.width / canvas.height;
-
-  if (wratio < ratio) {
-    canvas.style.width = width + "px";
-    canvas.style.height = width / ratio + "px";
-  } else {
-    canvas.style.width = height * ratio + "px";
-    canvas.style.height = height + "px";
-  }
 }
 },{}]},{},["b8dcfe8630a76380e8047954456aec0a","e1dc355820af71709720f63f441ab41c"], null)
 
