@@ -429,7 +429,17 @@ const config = {
     autoCenter: Phaser.Scale.Center.CENTER_BOTH,
     width: 800,
     height: 600,
-    parent: "game-container"
+    parent: "game-container",
+    min: {
+      width: 800,
+      height: 600
+    },
+    max: {
+      width: 1600,
+      height: 1200
+    },
+    zoom: 1,
+    autoRound: false
   }
 };
 const game = new Phaser.Game(config);
