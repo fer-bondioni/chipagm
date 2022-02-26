@@ -411,7 +411,7 @@ function hmrAcceptRun(bundle, id) {
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
-  width: 900,
+  width: 800,
   height: 600,
   parent: "game-container",
   physics: {
@@ -434,7 +434,7 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.SHOW_ALL,
+    mode: Phaser.Scale.ScaleModes.FIT,
     autoCenter: Phaser.Scale.Center.CENTER_BOTH
   }
 };
@@ -492,8 +492,6 @@ function create() {
   graphics = this.add.graphics();
   postFxPlugin = this.plugins.get("rexglowfilterpipelineplugin");
   var canvas;
-  checkOriention(this.scale.orientation);
-  this.scale.on("orientationchange", checkOriention, this);
   snap = this.add.image(730, 430, "camera").setScale(0.3).setScrollFactor(0).setDepth(30).setInteractive({
     useHandCursor: true
   });
@@ -1014,16 +1012,6 @@ function onEvent() {
       mario.stop();
     });
   }, 1000);
-}
-
-function checkOriention(orientation) {
-  if (orientation === Phaser.Scale.PORTRAIT) {
-    width = window.innerWidth;
-    height = window.innerHeight;
-  } else if (orientation === Phaser.Scale.LANDSCAPE) {
-    width = window.innerWidth;
-    height = window.innerHeight;
-  }
 }
 },{}]},{},["b8dcfe8630a76380e8047954456aec0a","e1dc355820af71709720f63f441ab41c"], null)
 
