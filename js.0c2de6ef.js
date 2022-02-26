@@ -411,8 +411,8 @@ function hmrAcceptRun(bundle, id) {
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 800,
+  height: 600,
   parent: "game-container",
   physics: {
     default: "arcade",
@@ -434,7 +434,7 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.SHOW_ALL,
+    mode: Phaser.Scale.ScaleModes.FIT,
     autoCenter: Phaser.Scale.Center.CENTER_BOTH
   }
 };
