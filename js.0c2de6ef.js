@@ -422,12 +422,6 @@ const config = {
       }
     }
   },
-  textPadding: {
-    left: "10px",
-    right: "10px",
-    top: "10px",
-    bottom: "10px"
-  },
   scene: {
     preload: preload,
     create: create,
