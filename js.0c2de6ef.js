@@ -1018,11 +1018,11 @@ function onEvent() {
 
 function checkOriention(orientation) {
   if (orientation === Phaser.Scale.PORTRAIT) {
-    width = window.innerWidth;
-    height = window.innerHeight;
+    width = 800;
+    height = 600;
   } else if (orientation === Phaser.Scale.LANDSCAPE) {
-    width = window.innerWidth;
-    height = window.innerHeight;
+    width = 1200;
+    height = 600;
   }
 
   console.log(width, height);
