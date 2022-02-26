@@ -492,18 +492,6 @@ function create() {
   graphics = this.add.graphics();
   postFxPlugin = this.plugins.get("rexglowfilterpipelineplugin");
   var canvas;
-  var orientation = this.scale.orientation;
-  this.scale.on("orientationchange", function (orientation) {
-    if (orientation === Phaser.Scale.PORTRAIT) {
-      width: 360;
-
-      height: 300;
-    } else if (orientation === Phaser.Scale.LANDSCAPE) {
-      height: 300;
-
-      width: 460;
-    }
-  });
   snap = this.add.image(730, 430, "camera").setScale(0.3).setScrollFactor(0).setDepth(30).setInteractive({
     useHandCursor: true
   });
