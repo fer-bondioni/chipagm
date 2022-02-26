@@ -411,7 +411,7 @@ function hmrAcceptRun(bundle, id) {
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
-  width: 800,
+  width: 900,
   height: 600,
   parent: "game-container",
   physics: {
@@ -434,7 +434,7 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.FIT,
+    mode: Phaser.Scale.ScaleModes.SHOW_ALL,
     autoCenter: Phaser.Scale.Center.CENTER_BOTH
   }
 };
@@ -1018,14 +1018,12 @@ function onEvent() {
 
 function checkOriention(orientation) {
   if (orientation === Phaser.Scale.PORTRAIT) {
-    width = 800;
-    height = 600;
+    width = window.innerWidth;
+    height = window.innerHeight;
   } else if (orientation === Phaser.Scale.LANDSCAPE) {
-    width = 1200;
-    height = 600;
+    width = window.innerWidth;
+    height = window.innerHeight;
   }
-
-  console.log(width, height);
 }
 },{}]},{},["b8dcfe8630a76380e8047954456aec0a","e1dc355820af71709720f63f441ab41c"], null)
 
