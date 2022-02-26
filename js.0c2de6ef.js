@@ -408,11 +408,13 @@ function hmrAcceptRun(bundle, id) {
   acceptedAssets[id] = true;
 }
 },{}],"e1dc355820af71709720f63f441ab41c":[function(require,module,exports) {
+// fix the height to 720
+const DEFAULT_HEIGHT = 600; // adjust the width dynamically based on the device screen ratio
+
+const DEFAULT_WIDTH = window.innerWidth / window.innerHeight * DEFAULT_HEIGHT;
 const config = {
   type: Phaser.AUTO,
   pixelArt: true,
-  width: 800,
-  height: 600,
   parent: "game-container",
   physics: {
     default: "arcade",
@@ -434,8 +436,10 @@ const config = {
     update: update
   },
   scale: {
-    mode: Phaser.Scale.ScaleModes.FIT,
-    autoCenter: Phaser.Scale.Center.CENTER_BOTH
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: DEFAULT_WIDTH,
+    height: DEFAULT_HEIGHT
   }
 };
 const game = new Phaser.Game(config);
@@ -456,8 +460,6 @@ let bombs;
 let timeText; //let showDebug = false;
 
 function preload() {
-  let url = "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js";
-  this.load.plugin("rexvirtualjoystickplugin", url, true);
   this.load.plugin("rexglowfilterpipelineplugin", "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js", true);
   this.load.image("tiles", "../assets/tilesets/tuxmon-sample-32px-extruded.png");
   this.load.image("button", "../assets/images/button.png");
