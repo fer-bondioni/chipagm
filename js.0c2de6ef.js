@@ -410,7 +410,7 @@ function hmrAcceptRun(bundle, id) {
 },{}],"e1dc355820af71709720f63f441ab41c":[function(require,module,exports) {
 const config = {
   type: Phaser.AUTO,
-  pixelArt: true,
+  pixelArt: false,
   physics: {
     default: "arcade",
     arcade: {
@@ -418,6 +418,12 @@ const config = {
         y: 0
       }
     }
+  },
+  textPadding: {
+    left: "10px",
+    right: "10px",
+    top: "10px",
+    bottom: "10px"
   },
   scene: {
     preload: preload,
@@ -429,17 +435,7 @@ const config = {
     autoCenter: Phaser.Scale.Center.CENTER_BOTH,
     width: 800,
     height: 600,
-    parent: "game-container",
-    min: {
-      width: 800,
-      height: 600
-    },
-    max: {
-      width: 1600,
-      height: 1200
-    },
-    zoom: 0.5,
-    autoRound: false
+    parent: "game-container"
   }
 };
 const game = new Phaser.Game(config);
