@@ -744,7 +744,7 @@ function create() {
   this.add.image(747, 476, "gift-box").setScrollFactor(0).setDepth(30).setScale(0.029); //gift-card
   //Help text that has a "fixed" position on the screen
 
-  this.add.text(0, 0, "Arrow keys to move and eat\n900 or more = 1 Chipa Card\n3 Chipa Cards = Real chipas\nThe Monsters are due on Chipa Street", {
+  this.add.text(0, 0, "Arrow keys to move and eat\n700 or more = 1 Chipa Card\n3 Chipa Cards = Real chipas\nThe Monsters are due on Chipa Street", {
     font: "18px Arial",
     fill: "white",
     padding: {
@@ -960,12 +960,12 @@ function onEvent() {
     scoreText.setPadding(40, 10, 100, 10);
   }
 
-  if (score < 900 && score !== 0) {
+  if (score < 700 && score !== 0) {
     lose.play();
     player.setTint(0xff0000);
     scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
     scoreText.setPadding(40, 10, 100, 10);
-  } else if (score > 900) {
+  } else if (score > 700) {
     win.play();
     scoreText.setText(`${score} chipas destroyed\nPoor little monsters\nCongratulations, Mona (terrible!)`);
     scoreText.setBackgroundColor("#FFAB32");
