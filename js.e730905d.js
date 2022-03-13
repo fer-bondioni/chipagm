@@ -131,12 +131,12 @@
       this[globalName] = mainExports;
     }
   }
-})({"b8dcfe8630a76380e8047954456aec0a":[function(require,module,exports) {
+})({"ac83e045b6160e681dadda62af8358c6":[function(require,module,exports) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = 1234;
 var HMR_ENV_HASH = "d751713988987e9331980363e24189ce";
-module.bundle.HMR_BUNDLE_ID = "0c2de6ef72b7d87b8c2e4ce3c7d09662";
+module.bundle.HMR_BUNDLE_ID = "e730905de1d375bfc2544968046b5ec5";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH */
 
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -965,7 +965,7 @@ function onEvent() {
     player.setTint(0xff0000);
     scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
     scoreText.setPadding(40, 10, 100, 10);
-  } else if (score > 700) {
+  } else if (score > 900) {
     win.play();
     scoreText.setText(`${score} chipas destroyed\nPoor little monsters\nCongratulations, Mona (terrible!)`);
     scoreText.setBackgroundColor("#FFAB32");
@@ -1024,6 +1024,6 @@ window.onresize = function () {
 
   console.log(window.innerWidth);
 };
-},{}]},{},["b8dcfe8630a76380e8047954456aec0a","e1dc355820af71709720f63f441ab41c"], null)
+},{}]},{},["ac83e045b6160e681dadda62af8358c6","e1dc355820af71709720f63f441ab41c"], null)
 
-//# sourceMappingURL=js.0c2de6ef.js.map
+//# sourceMappingURL=js.e730905d.js.map
