@@ -965,7 +965,7 @@ function onEvent() {
     player.setTint(0xff0000);
     scoreText.setText(`Game Over\nIrreversible destruction: ${score} chipas\nMona terrible!`);
     scoreText.setPadding(40, 10, 100, 10);
-  } else if (score > 900) {
+  } else if (score > 700) {
     win.play();
     scoreText.setText(`${score} chipas destroyed\nPoor little monsters\nCongratulations, Mona (terrible!)`);
     scoreText.setBackgroundColor("#FFAB32");
